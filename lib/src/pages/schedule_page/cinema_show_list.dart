@@ -43,6 +43,7 @@ class CinemaShowList extends StatelessWidget {
           visualizations: movie.visualizations,
           prices: movie.prices,
           tickets: movie.tickets,
+          seats: movie.seats,
           showSellTickets: (dateSelected
                       .compareTo(DateUtils.dateOnly(currentDateTime)) >
                   0 ||
@@ -70,6 +71,7 @@ class CinemaShowsContainer extends StatefulWidget {
       required this.prices,
       required this.tickets,
       required this.showSellTickets,
+      this.seats,
       this.timesSubtitled,
       this.timesTranslated})
       : super(key: key);
@@ -88,6 +90,7 @@ class CinemaShowsContainer extends StatefulWidget {
   bool showSellTickets;
   List<String>? timesSubtitled;
   List<String>? timesTranslated;
+  List<Map<String, List<int>>?>? seats;
   DateTime currentDateTime;
   @override
   State<CinemaShowsContainer> createState() => _CinemaShowsContainerState();
@@ -99,21 +102,11 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
   List<int> tickets = [];
   List<String> prices = [];
   List<String> visualizations = [];
+  List<String> ids = [];
+  List<Map<String, List<int>>?>? seats;
   late String timeTicketsAvailable = '';
   late String timesJoined = '';
-  /* @override
-  Widget _infoOptional(String name, String times) {
-    return Container(
-      width: 218,
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        '$name: $times',
-        style: const TextStyle(fontSize: 12),
-        maxLines: 3,
-        overflow: TextOverflow.fade,
-      ),
-    );
-  } */
+
   @override
   void initState() {
     timesJoined = widget.times.join(' - ');
@@ -127,6 +120,8 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
     List<String> visualizationsAvailable = [];
     List<int> ticketsAvailable = [];
     List<String> pricesAvailable = [];
+    List<String> idsAvailable = [];
+    List<Map<String, List<int>>?>? seatsShowsAvailable = [];
     TimeOfDay currentTime = TimeOfDay.fromDateTime(widget.currentDateTime);
     for (var i = 0; i < ticketsList.length; i++) {
       var splitted = times[i].split(":");
@@ -145,6 +140,8 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
         visualizationsAvailable.add(widget.visualizations[i]);
         ticketsAvailable.add(widget.tickets[i]);
         pricesAvailable.add(widget.prices[i]);
+        seatsShowsAvailable.add(widget.seats?[i]);
+        idsAvailable.add(widget.ids[i]);
       }
     }
     setState(() {
@@ -153,7 +150,9 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
       tickets = ticketsAvailable;
       prices = pricesAvailable;
       visualizations = visualizationsAvailable;
+      seats = seatsShowsAvailable;
       timeTicketsAvailable = setTimesAvailable.join(" - ");
+      ids = idsAvailable;
     });
   }
 
@@ -287,7 +286,7 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
                                       MaterialPageRoute(
                                           builder: (context) => BuyTicketsPage(
                                                 movieRef: widget.movieRef,
-                                                ids: widget.ids,
+                                                ids: ids,
                                                 title: widget.title,
                                                 tickets: tickets,
                                                 prices: prices,
@@ -297,6 +296,7 @@ class _CinemaShowsContainerState extends State<CinemaShowsContainer> {
                                                 imgURL: widget.imgURL,
                                                 audios: audios,
                                                 date: widget.dateSelected,
+                                                seats: seats,
                                               )));
                                 },
                                 style: ElevatedButton.styleFrom(

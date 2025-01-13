@@ -5,7 +5,7 @@ class CardMovie extends StatelessWidget {
       {Key? key,
       this.name,
       this.imgURL,
-      this.genre,
+      required this.genre,
       this.visualization,
       this.audio,
       this.times,
@@ -15,7 +15,7 @@ class CardMovie extends StatelessWidget {
   String? imgURL;
   String? releaseDate;
 
-  String? genre;
+  String genre;
   String? visualization;
   String? audio;
 
@@ -94,7 +94,7 @@ class CardMovie extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8.0, vertical: 2.0),
                       child: Text(
-                        '${genre!} ${visualization!} ${audio!}',
+                        '$genre ${visualization ?? ""} ${audio ?? ""}',
                         style: const TextStyle(fontSize: 8.0),
                       ),
                     ),

@@ -1,8 +1,13 @@
 import 'package:cine_app/src/commons/dates.dart';
 import 'package:cine_app/src/commons/validators.dart';
 import 'package:cine_app/src/models/cinema_show_model.dart';
+import 'package:cine_app/src/pages/buy_tickets_page/pay_pal_pay_page.dart';
+import 'package:cine_app/src/pages/buy_tickets_page/pay_pal_pay_seats_page.dart';
+import 'package:cine_app/src/providers/buy_provider.dart';
+import 'package:cine_app/src/services/show_service.dart';
 import 'package:cine_app/src/widgets/custom_textfield1.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BuyTicketsPage extends StatefulWidget {
   BuyTicketsPage(
@@ -17,6 +22,7 @@ class BuyTicketsPage extends StatefulWidget {
       required this.date,
       required this.prices,
       required this.times,
+      this.seats,
       required this.visualizations})
       : super(key: key);
   String movieRef;
@@ -30,6 +36,7 @@ class BuyTicketsPage extends StatefulWidget {
   List<String> visualizations;
   List<int> tickets;
   List<String> prices;
+  List<Map<String, List<int>>?>? seats;
   @override
   State<BuyTicketsPage> createState() => _BuyTicketsPageState();
 }
@@ -37,40 +44,50 @@ class BuyTicketsPage extends StatefulWidget {
 class _BuyTicketsPageState extends State<BuyTicketsPage> {
   late double total;
   late String selectedValue;
-  late CinemaShowModel cinemaShowSelected;
+  late CinemaShowBuy cinemaShowSelected;
   late String textFormatedDuration;
   final TextEditingController _doc = TextEditingController(),
       _invoiceName = TextEditingController();
   late int counter;
+  List<String> seatsAsigned = [];
   final _globalFormKey = GlobalKey<FormState>();
   final Validators _validators = Validators();
+  final showService = ShowService();
+
   @override
   void initState() {
     counter = 1;
+
     selectedValue = widget.times[0];
     textFormatedDuration = widget.duration % 60 > 0
         ? "${(widget.duration / 60).floor()} hora(s) y ${widget.duration % 60} minutos"
         : "${(widget.duration / 60).floor()} hora(s)";
-    cinemaShowSelected = CinemaShowModel(
-        movieRef: widget.movieRef,
-        showId: widget.ids[0],
-        title: widget.title,
-        audio: widget.audios[0],
-        date: Dates.castDateTimeToDateFormated(widget.date),
-        visualization: widget.visualizations[0],
-        price: widget.prices[0],
-        duration: widget.duration,
-        tickets: widget.tickets[0],
-        time: widget.times[0]);
+
+    cinemaShowSelected = CinemaShowBuy(
+      movieRef: widget.movieRef,
+      showId: widget.ids[0],
+      title: widget.title,
+      audio: widget.audios[0],
+      date: Dates.castDateTimeToDateFormated(widget.date),
+      visualization: widget.visualizations[0],
+      price: widget.prices[0],
+      duration: widget.duration,
+      tickets: widget.tickets[0],
+      time: widget.times[0],
+    );
 
     total = double.parse(cinemaShowSelected.price) * counter;
     super.initState();
   }
 
   bool _testInputs() => _globalFormKey.currentState!.validate();
+  Future<Map<String, List<int>>?> getSeats() async {
+    return await showService.getSeats(cinemaShowSelected.showId);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final buyData = Provider.of<BuyProvider>(context, listen: false);
     return SafeArea(
         child: Scaffold(
       backgroundColor: const Color.fromRGBO(237, 245, 253, 1),
@@ -93,6 +110,7 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                     width: 50.0,
                     child: IconButton(
                         onPressed: () {
+                          buyData.setTotal(0);
                           Navigator.pop(context);
                         },
                         icon: const Icon(
@@ -179,17 +197,18 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                           element == newValue);
                       setState(() {
                         selectedValue = widget.times[index];
-                        cinemaShowSelected = CinemaShowModel(
-                            movieRef: widget.movieRef,
-                            showId: widget.ids[index],
-                            title: widget.title,
-                            audio: widget.audios[index],
-                            date: Dates.castDateTimeToDateFormated(widget.date),
-                            visualization: widget.visualizations[index],
-                            price: widget.prices[index],
-                            duration: widget.duration,
-                            tickets: widget.tickets[index],
-                            time: widget.times[index]);
+                        cinemaShowSelected = CinemaShowBuy(
+                          movieRef: widget.movieRef,
+                          showId: widget.ids[index],
+                          title: widget.title,
+                          audio: widget.audios[index],
+                          date: Dates.castDateTimeToDateFormated(widget.date),
+                          visualization: widget.visualizations[index],
+                          price: widget.prices[index],
+                          duration: widget.duration,
+                          tickets: widget.tickets[index],
+                          time: widget.times[index],
+                        );
                         total =
                             double.parse(cinemaShowSelected.price) * counter;
                       });
@@ -319,12 +338,13 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                                   controller: _doc,
                                   inputHintText: "NIT/Carnet",
                                   inputType: TextInputType.number,
-                                  validator: _validators.emptyFieldValidator,
+                                  validator: _validators.nitCIinputValidator,
                                   width: 200),
                               CustomTextField1(
                                   controller: _invoiceName,
                                   inputHintText: "Nombre para la factura",
-                                  validator: _validators.emptyFieldValidator,
+                                  validator:
+                                      _validators.invoiceNameInputValidator,
                                   width: 400),
                             ],
                           ),
@@ -333,7 +353,8 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(bottom: 10.0, right: 30.0),
+                          padding: EdgeInsets.only(
+                              left: 10, bottom: 10.0, right: 30.0),
                           child: Text(
                             "Adquirir Entradas:  ",
                             style: TextStyle(fontSize: 16.0),
@@ -456,30 +477,124 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                         )
                       ],
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20.0),
-                      color: Colors.green[300],
-                      child: ElevatedButton(
-                          onPressed: () {
-                            if (_testInputs()) {
-                              //TODO: Verificar la disponibilidad de entradas para esta funcion dependiendo la cantidad de entradas
-                              //TODO: Si hay entradas disponibles reservar temporalmente por un tiempo de 1 min
-                              //TODO: Crear instancia de GooglePay o PayPal con el monto total
-                              //TODO: Verificar si el pago ha sido transferido correctamente!
-                              //TODO: Mandar a generar la entradas virtuales
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                              shape: const RoundedRectangleBorder(),
-                              backgroundColor: Colors.transparent,
-                              elevation: 0),
-                          child: const Center(
-                            child: Text(
-                              "Pagar Entradas",
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          )),
-                    ),
+                    FutureBuilder(
+                        future: getSeats(),
+                        builder: (context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            var seats1 =
+                                snapshot.data as Map<String, List<int>>;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.only(top: 20.0, bottom: 10.0),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    height: 2,
+                                    thickness: 2,
+                                    indent: 0,
+                                    endIndent: 0,
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                                  child: Text(
+                                    "NOTA: Esta función tiene asientos para reservar",
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 20.0),
+                                  color: Colors.green[300],
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        if (_testInputs()) {
+                                          buyData.setInvoiceName(
+                                              _invoiceName.text);
+                                          buyData.setNitCI(_doc.text);
+                                          buyData.setNumberSeats(counter);
+                                          buyData.setTotal(double.parse(
+                                                  cinemaShowSelected.price) *
+                                              counter);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PayPalPaySeatsPage(
+                                                      quantity: counter,
+                                                      seats: seats1,
+                                                      callback: () async {
+                                                        seats1 =
+                                                            await getSeats()
+                                                                as Map<String,
+                                                                    List<int>>;
+
+                                                        setState(() {});
+                                                      },
+                                                      unityPrice: double.parse(
+                                                          cinemaShowSelected
+                                                              .price),
+                                                      showId: cinemaShowSelected
+                                                          .showId,
+                                                    )),
+                                          );
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          shape: const RoundedRectangleBorder(),
+                                          backgroundColor: Colors.transparent,
+                                          elevation: 0),
+                                      child: const Center(
+                                        child: Text(
+                                          "Continuar",
+                                          style: TextStyle(fontSize: 18.0),
+                                        ),
+                                      )),
+                                ),
+                              ],
+                            );
+                          }
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 20.0),
+                            color: Colors.green[300],
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  if (_testInputs()) {
+                                    buyData.setInvoiceName(_invoiceName.text);
+                                    buyData.setNitCI(_doc.text);
+                                    buyData.setNumberSeats(counter);
+                                    buyData.setTotal(
+                                        double.parse(cinemaShowSelected.price) *
+                                            counter);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PayPalPayPage(
+                                                quantity: counter,
+                                                unityPrice: double.parse(
+                                                    cinemaShowSelected.price),
+                                                showId:
+                                                    cinemaShowSelected.showId,
+                                              )),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    shape: const RoundedRectangleBorder(),
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0),
+                                child: const Center(
+                                  child: Text(
+                                    "Continuar",
+                                    style: TextStyle(fontSize: 18.0),
+                                  ),
+                                )),
+                          );
+                        }),
                   ],
                 )),
           ],

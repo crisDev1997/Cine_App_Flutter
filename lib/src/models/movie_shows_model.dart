@@ -19,6 +19,8 @@ class MovieShowsModel {
     required this.visualizations,
     required this.tickets,
     required this.prices,
+    this.rooms,
+    this.seats,
   });
 
   String movieId;
@@ -32,33 +34,39 @@ class MovieShowsModel {
   List<String> visualizations;
   List<int> tickets;
   List<String> prices;
+  List<String>? rooms;
+  List<Map<String, List<int>>?>? seats;
 
   factory MovieShowsModel.fromJson(Map<String, dynamic> json) =>
       MovieShowsModel(
-        movieId: json["movieId"],
-        title: json["title"],
-        duration: json["duration"],
-        imgURL: json["imgURL"],
-        date: json["date"],
-        ids: json["ids"] == null
-            ? []
-            : List<String>.from(json["ids"]!.map((x) => x)),
-        times: json["times"] == null
-            ? []
-            : List<String>.from(json["times"]!.map((x) => x)),
-        audios: json["audios"] == null
-            ? []
-            : List<String>.from(json["audios"]!.map((x) => x)),
-        visualizations: json["visualizations"] == null
-            ? []
-            : List<String>.from(json["visualizations"]!.map((x) => x)),
-        tickets: json["tickets"] == null
-            ? []
-            : List<int>.from(json["tickets"]!.map((x) => x)),
-        prices: json["prices"] == null
-            ? []
-            : List<String>.from(json["prices"]!.map((x) => x)),
-      );
+          movieId: json["movieId"],
+          title: json["title"],
+          duration: json["duration"],
+          imgURL: json["imgURL"],
+          date: json["date"],
+          ids: json["ids"] == null
+              ? []
+              : List<String>.from(json["ids"]!.map((x) => x)),
+          times: json["times"] == null
+              ? []
+              : List<String>.from(json["times"]!.map((x) => x)),
+          audios: json["audios"] == null
+              ? []
+              : List<String>.from(json["audios"]!.map((x) => x)),
+          visualizations: json["visualizations"] == null
+              ? []
+              : List<String>.from(json["visualizations"]!.map((x) => x)),
+          tickets: json["tickets"] == null
+              ? []
+              : List<int>.from(json["tickets"]!.map((x) => x)),
+          prices: json["prices"] == null
+              ? []
+              : List<String>.from(json["prices"]!.map((x) => x)),
+          seats:
+              json["seats"] == null
+                  ? []
+                  : List<Map<String, List<int>>>.from(
+                      json['seats']!.map((x) => x)));
 
   Map<String, dynamic> toJson() => {
         "movieId": movieId,
@@ -77,5 +85,8 @@ class MovieShowsModel {
             tickets == null ? [] : List<dynamic>.from(tickets.map((x) => x)),
         "prices":
             prices == null ? [] : List<dynamic>.from(prices.map((x) => x)),
+        "seats": seats == null
+            ? []
+            : List<Map<String, List<int>>>.from(seats!.map((x) => x))
       };
 }

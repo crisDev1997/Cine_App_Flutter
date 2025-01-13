@@ -90,19 +90,24 @@ class ContainerReleasedMovie extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(25.0)),
               child: Image.network(
                 imgURL,
-                width: 120,
+                width: 125,
                 fit: BoxFit.fill,
-                height: 220,
+                height: 225,
               ),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title.toUpperCase(),
-                style: const TextStyle(
-                    fontSize: 16.0, fontWeight: FontWeight.bold),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.50,
+                child: Text(
+                  title.toUpperCase(),
+                  maxLines: 3,
+                  overflow: TextOverflow.fade,
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
               ),
               Text(
                 "Genero: $genre",

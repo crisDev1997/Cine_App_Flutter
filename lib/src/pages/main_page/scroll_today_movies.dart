@@ -1,3 +1,4 @@
+import 'package:cine_app/src/models/movie_model.dart';
 import 'package:flutter/material.dart';
 
 import '../movie_page/movie_page.dart';
@@ -7,7 +8,7 @@ class ScrollTodayMovies extends StatelessWidget {
   ScrollTodayMovies({Key? key, this.height, required this.todayMovieList})
       : super(key: key);
   double? height;
-  final List<dynamic> todayMovieList;
+  final List<MovieModel> todayMovieList;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -25,22 +26,19 @@ class ScrollTodayMovies extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => MoviePage(
-                          tag: "today" + todayMovie["id"],
-                          name: todayMovie["name"],
-                          imgURL: todayMovie["imgURL"],
-                          synopsis: todayMovie["synopsis"],
-                          genre: todayMovie["genre"],
-                          clasification: todayMovie["clasification"],
+                          tag: "today${todayMovie.id}",
+                          name: todayMovie.title,
+                          imgURL: todayMovie.imgURL,
+                          synopsis: todayMovie.synopsis,
+                          genre: todayMovie.genre,
+                          clasification: todayMovie.clasification.toString(),
                         ))),
             child: Hero(
-              tag: "today" + todayMovie["id"],
+              tag: "billboard-${todayMovie.id}",
               child: CardMovie(
-                name: todayMovieList[index]["name"],
-                imgURL: todayMovieList[index]["imgURL"],
-                genre: todayMovieList[index]["genre"],
-                audio: todayMovieList[index]["audio"],
-                visualization: todayMovieList[index]["visualization"],
-                times: todayMovieList[index]["times"],
+                name: todayMovieList[index].title,
+                imgURL: todayMovieList[index].imgURL,
+                genre: todayMovieList[index].genre,
               ),
             ),
           );

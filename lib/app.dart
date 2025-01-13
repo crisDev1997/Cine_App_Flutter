@@ -1,6 +1,7 @@
 import 'package:cine_app/src/pages/home_page/home_page.dart';
 import 'package:cine_app/src/pages/login_page/login_page.dart';
 import 'package:cine_app/src/pages/register_page/register_page.dart';
+import 'package:cine_app/src/providers/buy_provider.dart';
 import 'package:cine_app/src/providers/movie_provider.dart';
 import 'package:cine_app/src/providers/show_provider.dart';
 import 'package:cine_app/src/providers/user_provider.dart';
@@ -18,6 +19,7 @@ class _MyAppState extends State<MyApp> {
   final UserProvider user = UserProvider();
   final MovieProvider movies = MovieProvider();
   final ShowProvider shows = ShowProvider();
+  final BuyProvider buyData = BuyProvider();
   @override
   void initState() {
     super.initState();
@@ -32,7 +34,8 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider<MovieProvider>(create: ((context) => movies)),
           ChangeNotifierProvider<ShowProvider>(
             create: ((context) => shows),
-          )
+          ),
+          ChangeNotifierProvider<BuyProvider>(create: ((context) => buyData))
         ],
         builder: (context, _) {
           var user = context.watch<UserProvider>();

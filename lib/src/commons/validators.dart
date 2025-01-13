@@ -69,6 +69,29 @@ class Validators {
     return null;
   }
 
+  nitCIinputValidator(String? value) {
+    final RegExp numericRegex = RegExp(r'^\d+$');
+    if (value!.isEmpty) {
+      return 'Este campo no puede estar vacío';
+    }
+    if (!numericRegex.hasMatch(value)) {
+      return 'Este campo solo puede contener números';
+    }
+    return null;
+  }
+
+  invoiceNameInputValidator(String? value) {
+    final RegExp regex = RegExp(r'^[a-zA-Z]+$');
+    if (value == null || value.isEmpty) {
+      return 'Este campo es requerido';
+    }
+    if (!regex.hasMatch(value)) {
+      return 'Ingrese un nombre valido para la factura';
+    }
+
+    return null;
+  }
+
   /* passValidator(String value) {
     RegExp passExp = RegExp(r"^(?=.*[A-Z])(?=.*[0-9])(?=.{8,})");
     if (value.isEmpty) return "Debe rellenar este campo";

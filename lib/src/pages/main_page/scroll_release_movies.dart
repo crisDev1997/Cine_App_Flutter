@@ -26,7 +26,7 @@ class ScrollReleaseMovies extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => MoviePage(
-                          tag: "release${releaseMovie.id}",
+                          tag: "release-${releaseMovie.id}",
                           name: releaseMovie.title,
                           imgURL: releaseMovie.imgURL,
                           synopsis: releaseMovie.synopsis,
@@ -35,10 +35,11 @@ class ScrollReleaseMovies extends StatelessWidget {
                           releaseDate: releaseMovie.releaseDate,
                         ))),
             child: Hero(
-              tag: "release${releaseMovie.id}",
+              tag: "release-${releaseMovie.id}",
               child: CardMovie(
                 name: releaseMovieList[index].title,
                 imgURL: releaseMovieList[index].imgURL,
+                genre: releaseMovieList[index].genre,
                 releaseDate: releaseMovieList[index].releaseDate,
               ),
             ),

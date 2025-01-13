@@ -33,12 +33,21 @@ dependencies:
   flutter_signin_button: 2.0.0
   firebase_auth: 
   firebase_core: 
+  firebase_storage:
   cloud_firestore: 
   google_sign_in: 
   url_launcher: 6.1.7
-  webview_flutter: 3.0.4
   timezone: ^0.9.1
+  intl: ^0.18.1
+  http: 0.13.5
   provider: 6.0.0
+  path_provider: 2.0.14
+  dio: ^4.0.6
+  image_picker: ^0.8.7+4
+  permission_handler: ^10.2.0
+  gallery_saver: ^2.3.2
+  flutter_paypal: ^0.0.8
+  awesome_dialog: ^3.0.2
   snippet_coder_utils: 1.0.12
   font_awesome_flutter: 9.0.0
   flutter_svg: 1.1.6

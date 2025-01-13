@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-CinemaShowModel? cinemaShowModelFromJson(String str) =>
-    CinemaShowModel.fromJson(json.decode(str));
+CinemaShowBuy? cinemaShowModelFromJson(String str) =>
+    CinemaShowBuy.fromJson(json.decode(str));
 
-String cinemaShowModelToJson(CinemaShowModel? data) =>
+String cinemaShowModelToJson(CinemaShowBuy? data) =>
     json.encode(data!.toJson());
 
-class CinemaShowModel {
-  CinemaShowModel({
+class CinemaShowBuy {
+  CinemaShowBuy({
     this.movieRef,
-    this.showId,
+    required this.showId,
     this.title,
     this.date,
     this.time,
@@ -18,10 +18,11 @@ class CinemaShowModel {
     this.visualization,
     this.tickets,
     required this.price,
+    this.seats,
   });
 
   String? movieRef;
-  String? showId;
+  String showId;
   String? title;
   String? date;
   String? time;
@@ -30,20 +31,19 @@ class CinemaShowModel {
   String? visualization;
   int? tickets;
   String price;
-
-  factory CinemaShowModel.fromJson(Map<String, dynamic> json) =>
-      CinemaShowModel(
-        movieRef: json["movieRef"],
-        showId: json["showId"],
-        title: json["title"],
-        date: json["date"],
-        duration: json["duration"],
-        time: json["time"],
-        audio: json["audio"],
-        visualization: json["visualization"],
-        tickets: json["tickets"],
-        price: json["price"],
-      );
+  Map<String, List<int>>? seats;
+  factory CinemaShowBuy.fromJson(Map<String, dynamic> json) => CinemaShowBuy(
+      movieRef: json["movieRef"],
+      showId: json["showId"],
+      title: json["title"],
+      date: json["date"],
+      duration: json["duration"],
+      time: json["time"],
+      audio: json["audio"],
+      visualization: json["visualization"],
+      tickets: json["tickets"],
+      price: json["price"],
+      seats: json["seats"]);
 
   Map<String, dynamic> toJson() => {
         "movieRef": movieRef,
@@ -56,5 +56,6 @@ class CinemaShowModel {
         "visualization": visualization,
         "tickets": tickets,
         "price": price,
+        "seats": seats
       };
 }

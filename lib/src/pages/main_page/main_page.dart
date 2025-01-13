@@ -162,7 +162,7 @@ class _MainPageState extends State<MainPage> {
     {
       "title": "promo3",
       "imgURL":
-          "https://www.procinal.com/uploads/HOME/Noticias_Destacados/PROMOCIONES/Promo-CumpleCF.png",
+          "https://www.cinesprogreso.com/img/slide/cinesprogreso-beb7c31d.png",
       "description": "Octubre..."
     },
     {
@@ -209,7 +209,7 @@ class _MainPageState extends State<MainPage> {
                 future: movieProvider.fetchRecentlyReleasedMovies(),
                 builder: (_, AsyncSnapshot<List<MovieModel>> snapshot) {
                   if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                    final recentlyList = snapshot.data;
+                    final releasedList = snapshot.data;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -221,7 +221,7 @@ class _MainPageState extends State<MainPage> {
                           height: 10.0,
                         ),
                         ScrollReleaseMovies(
-                          releaseMovieList: recentlyList ?? [],
+                          releaseMovieList: releasedList ?? [],
                         ),
                         const SizedBox(
                           height: 30.0,
@@ -232,27 +232,34 @@ class _MainPageState extends State<MainPage> {
                     return Container();
                   }
                 }),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Cartelera de Hoy',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    'Ver Todo ->',
-                    style: TextStyle(color: Colors.blue[400]),
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            ScrollTodayMovies(
-              todayMovieList: testMovie,
+            FutureBuilder(
+              future: movieProvider.fetchOnBillboardMovies(),
+              builder: (_, AsyncSnapshot<List<MovieModel>> snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  final billboardList = snapshot.data;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'En cartelera',
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      ScrollTodayMovies(
+                        todayMovieList: billboardList ?? [],
+                      ),
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                    ],
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
             const SizedBox(
               height: 30.0,

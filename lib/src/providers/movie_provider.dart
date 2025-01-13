@@ -37,6 +37,22 @@ class MovieProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<MovieModel>> fetchOnBillboardMovies() async {
+    try {
+      if (_onBillboardMovies.isNotEmpty) {
+        return _onBillboardMovies;
+      }
+      final MovieService movieService = MovieService();
+      List<MovieModel>? list = await movieService.getOnBillboardMovies();
+      print("Lista en Cartelera: $list");
+      _onBillboardMovies = list ?? [];
+      notifyListeners();
+      return _onBillboardMovies;
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<List<MovieModel>> refreshRecentlyReleasedMovies() async {
     final MovieService movieService = MovieService();
     List<MovieModel>? list = await movieService.getRecentlyReleasedMovies();
@@ -45,17 +61,18 @@ class MovieProvider extends ChangeNotifier {
     return _recentlyReleasedMovies;
   }
 
-  Future<void> fetchComingSoonMovies() async {
-    final MovieService movieService = MovieService();
-    List<MovieModel>? list = await movieService.getComingSoonMovies();
-    _comingSoonMovies = list ?? [];
-    notifyListeners();
-  }
-
-  Future<void> fetchOnBillboardMovies() async {
-    final MovieService movieService = MovieService();
-    List<MovieModel>? list = await movieService.getOnBillboardMovies();
-    _onBillboardMovies = list ?? [];
-    notifyListeners();
+  Future<List<MovieModel>> fetchComingSoonMovies() async {
+    try {
+      if (_comingSoonMovies.isNotEmpty) {
+        return _comingSoonMovies;
+      }
+      final MovieService movieService = MovieService();
+      List<MovieModel>? list = await movieService.getComingSoonMovies();
+      _comingSoonMovies = list ?? [];
+      notifyListeners();
+      return _comingSoonMovies;
+    } catch (e) {
+      return [];
+    }
   }
 }

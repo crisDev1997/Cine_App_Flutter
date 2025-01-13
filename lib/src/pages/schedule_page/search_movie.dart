@@ -11,6 +11,16 @@ class SearchMovie extends StatelessWidget {
   String dateFormated;
   VoidCallback? onEditComplete;
 
+  /*
+  
+  o
+          i: (event) =>
+              FocusManager.instance.primaryFocus?.unfocus(),
+          onEditingComplete: () {
+            onEditComplete!.call();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+   */
   @override
   Widget build(BuildContext context) {
     FocusNode focus = FocusNode();
@@ -20,12 +30,6 @@ class SearchMovie extends StatelessWidget {
         child: TextFormField(
           focusNode: focus,
           controller: controller,
-          onTapOutside: (event) =>
-              FocusManager.instance.primaryFocus?.unfocus(),
-          onEditingComplete: () {
-            onEditComplete!.call();
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
