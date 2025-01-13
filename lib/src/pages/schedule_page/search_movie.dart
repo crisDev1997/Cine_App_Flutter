@@ -20,12 +20,12 @@ class SearchMovie extends StatelessWidget {
         child: TextFormField(
           focusNode: focus,
           controller: controller,
-          onTapOutside: (event) =>
+          /* onTapOutside: (event) =>
               FocusManager.instance.primaryFocus?.unfocus(),
           onEditingComplete: () {
             onEditComplete!.call();
             FocusManager.instance.primaryFocus?.unfocus();
-          },
+          }, */
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
